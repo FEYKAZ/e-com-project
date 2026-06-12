@@ -8,28 +8,29 @@ body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background: linear-gradient(135deg, #0f0c29 0%, #1a1a3e 50%, #24243e 100%);
   min-height: 100vh;
-  padding: 16px;
+  padding: 12px;
   color: #fff;
 }
 
 .app-container {
   max-width: 500px;
   margin: 0 auto;
+  width: 100%;
 }
 
 /* Header */
 .app-header {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .logo-icon {
-  font-size: 48px;
-  margin-bottom: 8px;
+  font-size: 40px;
+  margin-bottom: 4px;
 }
 
 .app-header h1 {
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 800;
   letter-spacing: -0.5px;
 }
@@ -41,33 +42,33 @@ body {
 }
 
 .subtitle {
-  font-size: 13px;
+  font-size: 12px;
   color: #94a3b8;
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
 /* Warning Card */
 .warning-card {
   background: rgba(239, 68, 68, 0.15);
   border: 1px solid rgba(239, 68, 68, 0.3);
-  border-radius: 16px;
-  padding: 12px 16px;
+  border-radius: 14px;
+  padding: 10px 14px;
   display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 10px;
+  margin-bottom: 16px;
 }
 
 .warning-card span {
-  font-size: 20px;
+  font-size: 18px;
 }
 
 .warning-text strong {
-  font-size: 13px;
+  font-size: 12px;
   display: block;
 }
 
 .warning-text small {
-  font-size: 11px;
+  font-size: 10px;
   color: #f87171;
 }
 
@@ -76,9 +77,9 @@ body {
   background: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 16px;
-  margin-bottom: 16px;
+  border-radius: 18px;
+  padding: 14px;
+  margin-bottom: 14px;
 }
 
 .card-title {
@@ -86,13 +87,13 @@ body {
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  font-size: 14px;
-  margin-bottom: 12px;
+  font-size: 13px;
+  margin-bottom: 10px;
   color: #cbd5e1;
 }
 
 .icon {
-  font-size: 18px;
+  font-size: 16px;
 }
 
 /* Special Card */
@@ -102,10 +103,10 @@ body {
 }
 
 .special-desc {
-  font-size: 12px;
+  font-size: 11px;
   color: #cbd5e1;
-  margin-bottom: 16px;
-  line-height: 1.5;
+  margin-bottom: 14px;
+  line-height: 1.4;
 }
 
 /* Input */
@@ -116,13 +117,13 @@ body {
 
 .cookie-input {
   flex: 1;
-  padding: 12px 14px;
-  border-radius: 14px;
+  padding: 12px 12px;
+  border-radius: 12px;
   border: 1px solid #334155;
   background: #1e293b;
   color: #fff;
   font-family: monospace;
-  font-size: 11px;
+  font-size: 10px;
   outline: none;
   word-break: break-all;
 }
@@ -133,12 +134,12 @@ body {
 
 .input-field {
   flex: 1;
-  padding: 12px 14px;
-  border-radius: 14px;
+  padding: 12px 12px;
+  border-radius: 12px;
   border: 1px solid #334155;
   background: #1e293b;
   color: #fff;
-  font-size: 14px;
+  font-size: 13px;
   outline: none;
 }
 
@@ -148,7 +149,7 @@ body {
 
 .input-group {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
@@ -160,21 +161,22 @@ body {
 /* Buttons */
 .btn {
   border: none;
-  border-radius: 14px;
+  border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  font-size: 14px;
+  font-size: 13px;
+  text-align: center;
 }
 
 .btn-full {
   width: 100%;
-  padding: 14px;
-  margin-bottom: 12px;
+  padding: 12px;
+  margin-bottom: 10px;
 }
 
 .btn-small {
-  padding: 10px 18px;
+  padding: 10px 16px;
 }
 
 .btn-primary {
@@ -208,13 +210,13 @@ body {
 }
 
 .btn-icon {
-  padding: 0 16px;
-  border-radius: 14px;
+  padding: 0 14px;
+  border-radius: 12px;
   border: none;
   background: #334155;
   color: #fff;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .btn:active {
@@ -224,15 +226,15 @@ body {
 .button-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 /* Cookie Status */
 .cookie-status {
   margin-top: 8px;
-  font-size: 11px;
-  padding: 6px 10px;
-  border-radius: 10px;
+  font-size: 10px;
+  padding: 5px 8px;
+  border-radius: 8px;
 }
 
 .cookie-status.valid {
@@ -247,21 +249,22 @@ body {
 
 /* Hint */
 .hint-text {
-  font-size: 10px;
+  font-size: 9px;
   color: #64748b;
   margin-top: 8px;
 }
 
 .warning-text-small {
   color: #f59e0b;
-  margin-top: 12px;
+  margin-top: 10px;
+  font-size: 10px;
 }
 
 /* Result */
 .result-card {
-  margin-top: 20px;
+  margin-top: 16px;
   background: #0f172a;
-  border-radius: 20px;
+  border-radius: 16px;
   border: 1px solid #334155;
   overflow: hidden;
   display: none;
@@ -275,14 +278,14 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
+  padding: 10px 14px;
   background: #1e293b;
   border-bottom: 1px solid #334155;
 }
 
 .result-header span {
   font-weight: 600;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .clear-btn {
@@ -290,15 +293,15 @@ body {
   border: none;
   color: #94a3b8;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .result-content {
-  padding: 16px;
-  font-size: 12px;
-  line-height: 1.6;
+  padding: 14px;
+  font-size: 11px;
+  line-height: 1.5;
   color: #cbd5e1;
-  max-height: 300px;
+  max-height: 280px;
   overflow-y: auto;
   white-space: pre-wrap;
   word-break: break-word;
@@ -328,9 +331,9 @@ body {
 }
 
 .spinner {
-  width: 45px;
-  height: 45px;
-  border: 4px solid #334155;
+  width: 40px;
+  height: 40px;
+  border: 3px solid #334155;
   border-top-color: #00d4ff;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -341,25 +344,35 @@ body {
 }
 
 .loading-overlay p {
-  margin-top: 15px;
+  margin-top: 12px;
   color: #fff;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 footer {
   text-align: center;
-  margin-top: 20px;
-  font-size: 10px;
+  margin-top: 16px;
+  font-size: 9px;
   color: #475569;
 }
 
-/* Responsive */
+/* Responsive - HP kecil */
 @media (max-width: 450px) {
   body {
-    padding: 12px;
+    padding: 8px;
   }
   .app-header h1 {
-    font-size: 24px;
+    font-size: 22px;
+  }
+  .logo-icon {
+    font-size: 36px;
+  }
+  .card {
+    padding: 12px;
+  }
+  .btn-full {
+    padding: 10px;
+    font-size: 12px;
   }
   .input-group {
     flex-direction: column;
@@ -367,4 +380,7 @@ footer {
   .btn-small {
     width: 100%;
   }
-    }
+  .cookie-input {
+    font-size: 9px;
+  }
+}
