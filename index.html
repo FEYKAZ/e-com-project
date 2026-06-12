@@ -3,109 +3,136 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-  <title>Roblox Manager - Hapus Email via Usia</title>
+  <title>Roblox Manager | Hapus Email via Usia</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
 
-<div class="app-container">
-  <!-- Header -->
-  <div class="app-header">
-    <div class="logo-icon">🔐</div>
-    <h1>Roblox<span>Manager</span></h1>
-    <p class="subtitle">Hapus email dengan ubah usia akun</p>
+<div class="app">
+  <!-- Sidebar / Header Mobile -->
+  <div class="header">
+    <div class="header-content">
+      <div class="logo">
+        <i class="fas fa-robot"></i>
+        <span>Roblox<span>Manager</span></span>
+      </div>
+      <div class="header-badge">
+        <i class="fas fa-shield-alt"></i> Private Tool
+      </div>
+    </div>
+    <p class="tagline">Hapus email dengan mengubah usia akun</p>
   </div>
 
-  <!-- Warning -->
-  <div class="warning-card">
-    <span>⚠️</span>
-    <div class="warning-text">
-      <strong>Hanya untuk akun sendiri!</strong>
-      <small>Mengubah usia ke bawah 13 tahun akan menghapus email otomatis</small>
+  <div class="container">
+    <!-- Warning Alert -->
+    <div class="alert alert-warning">
+      <i class="fas fa-exclamation-triangle"></i>
+      <div class="alert-content">
+        <strong>Hanya untuk akun sendiri!</strong>
+        <small>Mengubah usia ke bawah 13 tahun akan menghapus email otomatis</small>
+      </div>
     </div>
-  </div>
 
-  <!-- Cookie Input -->
-  <div class="card">
-    <div class="card-title">
-      <span class="icon">🍪</span>
-      <span>.ROBLOSECURITY Cookie</span>
+    <!-- Cookie Card -->
+    <div class="card cookie-card">
+      <div class="card-header">
+        <i class="fas fa-cookie-bite"></i>
+        <h3>.ROBLOSECURITY Cookie</h3>
+      </div>
+      <div class="cookie-input-group">
+        <input type="password" id="cookieInput" class="cookie-input" placeholder="Tempel cookie disini...">
+        <button id="toggleCookieBtn" class="icon-btn" title="Show/Hide">
+          <i class="fas fa-eye"></i>
+        </button>
+      </div>
+      <div id="cookieStatus" class="cookie-status"></div>
+      <div class="input-hint">
+        <i class="fas fa-info-circle"></i> Cookie format CAE... atau _|WARNING... (salin FULL)
+      </div>
     </div>
-    <div class="cookie-input-wrapper">
-      <input type="password" id="cookieInput" class="cookie-input" placeholder="Tempel cookie (dimulai CAE...)">
-      <button id="toggleCookieBtn" class="btn-icon">👁️</button>
-    </div>
-    <div id="cookieStatus" class="cookie-status"></div>
-    <div class="hint-text">📌 Cookie format CAE... atau _|WARNING... (salin FULL)</div>
-  </div>
 
-  <!-- Tombol Cek Info -->
-  <button id="fetchInfoBtn" class="btn btn-primary btn-full">
-    🔍 Cek Info Akun
-  </button>
-
-  <!-- ========== FITUR UTAMA: HAPUS EMAIL VIA UBAH USIA ========== -->
-  <div class="card special-card">
-    <div class="card-title">
-      <span class="icon">🗑️</span>
-      <span>HAPUS EMAIL</span>
-    </div>
-    <div class="special-desc">
-      Dengan mengubah usia akun menjadi <strong>DI BAWAH 13 TAHUN</strong>, 
-      email akan otomatis terhapus dari akun.
-    </div>
-    <div class="button-group">
-      <button id="deleteEmailBtn" class="btn btn-danger btn-full">
-        🗑️ HAPUS EMAIL (Ubah Usia &lt; 13)
+    <!-- Action Buttons Grid -->
+    <div class="actions-grid">
+      <button id="fetchInfoBtn" class="btn btn-info">
+        <i class="fas fa-user-circle"></i>
+        <span>Info Akun</span>
       </button>
-      <button id="randomAgeBtn" class="btn btn-purple btn-full">
-        🎲 Random Usia (&lt;13 Tahun)
+      
+      <button id="deleteEmailBtn" class="btn btn-danger">
+        <i class="fas fa-trash-alt"></i>
+        <span>Hapus Email</span>
+      </button>
+      
+      <button id="randomAgeBtn" class="btn btn-purple">
+        <i class="fas fa-dice"></i>
+        <span>Random Usia</span>
+      </button>
+      
+      <button id="logoutAllBtn" class="btn btn-dark">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout Semua</span>
       </button>
     </div>
-    <div class="hint-text warning-text-small">
-      ⚡ Efek: Akun jadi RESTRICTED MODE (chat terbatas, filter ketat)
+
+    <!-- Email Change Section -->
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-envelope"></i>
+        <h3>Ubah Email</h3>
+      </div>
+      <div class="input-group">
+        <input type="email" id="newEmail" class="input-field" placeholder="Email baru">
+        <button id="changeEmailBtn" class="btn btn-sm btn-green">
+          <i class="fas fa-save"></i> Simpan
+        </button>
+      </div>
     </div>
+
+    <!-- Username Change Section -->
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-user-edit"></i>
+        <h3>Ubah Username</h3>
+      </div>
+      <div class="input-group">
+        <input type="text" id="newUsername" class="input-field" placeholder="Username baru (3-20 karakter)">
+        <button id="changeUsernameBtn" class="btn btn-sm btn-blue">
+          <i class="fas fa-pen"></i> Ganti
+        </button>
+      </div>
+    </div>
+
+    <!-- Result Card -->
+    <div id="resultArea" class="result-card">
+      <div class="result-header">
+        <span><i class="fas fa-terminal"></i> Output</span>
+        <button id="clearResultBtn" class="clear-btn">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div id="resultContent" class="result-content"></div>
+    </div>
+
+    <footer>
+      <i class="fas fa-lock"></i> Untuk akun sendiri • 
+      <i class="fab fa-github"></i> GitHub Pages Ready
+    </footer>
   </div>
 
-  <!-- Ubah Email Manual (Alternatif) -->
-  <div class="card">
-    <div class="card-title">
-      <span class="icon">📧</span>
-      <span>Ubah Email Manual</span>
-    </div>
-    <div class="input-group">
-      <input type="email" id="newEmail" class="input-field" placeholder="Email baru">
-      <button id="changeEmailBtn" class="btn btn-small btn-green">Ganti</button>
+  <div id="loadingOverlay" class="loading-overlay" style="display:none;">
+    <div class="loading-card">
+      <div class="spinner"></div>
+      <p>Memproses request...</p>
+      <small>Mohon tunggu</small>
     </div>
   </div>
+</div>
 
-  <!-- Ubah Username -->
-  <div class="card">
-    <div class="card-title">
-      <span class="icon">✏️</span>
-      <span>Ubah Username</span>
-    </div>
-    <div class="input-group">
-      <input type="text" id="newUsername" class="input-field" placeholder="Username baru (3-20 karakter)">
-      <button id="changeUsernameBtn" class="btn btn-small btn-blue">Ganti</button>
-    </div>
-  </div>
-
-  <!-- Logout -->
-  <button id="logoutAllBtn" class="btn btn-dark btn-full">
-    🚪 Logout Semua Sesi Lain
-  </button>
-
-  <!-- Result -->
-  <div id="resultArea" class="result-card">
-    <div class="result-header">
-      <span>📌 Hasil</span>
-      <button id="clearResultBtn" class="clear-btn">✖</button>
-    </div>
-    <div id="resultContent" class="result-content"></div>
-  </div>
-
+<script src="script.js"></script>
+</body>
+</html>
   <div id="loadingOverlay" class="loading-overlay" style="display:none;">
     <div class="spinner"></div>
     <p>Memproses...</p>
