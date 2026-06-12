@@ -1,7 +1,15 @@
-// ========== ROBLOX MANAGER - HAPUS EMAIL VIA UBAH USIA ==========
-// Cookie format CAE... atau _|WARNING...
+// ========== ROBLOX MANAGER - GITHUB PAGES READY ==========
+// Menggunakan multiple CORS proxy untuk stabilitas
 
 let currentCookie = '';
+let activeProxyIndex = 0;
+
+// Daftar CORS proxy (jika satu mati, pakai yang lain)
+const CORS_PROXIES = [
+  'https://corsproxy.io/?url=',
+  'https://api.allorigins.win/raw?url=',
+  'https://cors-anywhere.herokuapp.com/'
+];
 
 // DOM Elements
 const cookieInput = document.getElementById('cookieInput');
@@ -19,7 +27,6 @@ const loadingOverlay = document.getElementById('loadingOverlay');
 const clearResultBtn = document.getElementById('clearResultBtn');
 const newEmailInput = document.getElementById('newEmail');
 const newUsernameInput = document.getElementById('newUsername');
-const newBirthdateInput = document.getElementById('newBirthdate');
 
 // Helper functions
 function showResult(message, isError = false) {
@@ -37,10 +44,10 @@ clearResultBtn.onclick = () => {
 toggleCookieBtn.onclick = () => {
   if (cookieInput.type === 'password') {
     cookieInput.type = 'text';
-    toggleCookieBtn.textContent = '🙈';
+    toggleCookieBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
   } else {
     cookieInput.type = 'password';
-    toggleCookieBtn.textContent = '👁️';
+    toggleCookieBtn.innerHTML = '<i class="fas fa-eye"></i>';
   }
 };
 
@@ -57,42 +64,51 @@ function getRandomUnder13Date() {
   return `${birthYear}-${String(birthMonth + 1).padStart(2, '0')}-${String(birthDay).padStart(2, '0')}`;
 }
 
-// Fungsi fetch dengan cookie
+// Fetch dengan multiple proxy
 async function fetchRoblox(url, options = {}) {
-  const response = await fetch(url, {
-    ...options,
-    credentials: 'include',
-    headers: {
-      ...options.headers,
-      'Cookie': `.ROBLOSECURITY=${currentCookie}`,
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
+  let lastError = null;
+  
+  for (let i = 0; i < CORS_PROXIES.length; i++) {
+    try {
+      const proxyUrl = CORS_PROXIES[i] + encodeURIComponent(url);
+      const response = await fetch(proxyUrl, {
+        ...options,
+        headers: {
+          ...options.headers,
+          'Cookie': `.ROBLOSECURITY=${currentCookie}`,
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok || response.status === 403 || response.status === 429) {
+        return response;
+      }
+    } catch (err) {
+      lastError = err;
+      continue;
     }
-  });
-  return response;
+  }
+  throw lastError || new Error('All proxies failed');
 }
 
-// Ambil CSRF Token
+// Get CSRF Token
 async function getCsrfToken() {
   try {
-    const response = await fetchRoblox('https://auth.roblox.com/v2/logout', {
-      method: 'POST'
-    });
+    const response = await fetchRoblox('https://auth.roblox.com/v2/logout', { method: 'POST' });
     const token = response.headers.get('x-csrf-token');
-    if (!token) throw new Error('No CSRF');
-    return token;
+    if (token) return token;
+    throw new Error('No token');
   } catch (error) {
-    const response = await fetchRoblox('https://www.roblox.com/game/GetCurrentUser.ashx', {
-      method: 'GET'
-    });
+    const response = await fetchRoblox('https://www.roblox.com/game/GetCurrentUser.ashx', { method: 'GET' });
     const token = response.headers.get('x-csrf-token');
-    if (!token) throw new Error('Failed to get CSRF');
+    if (!token) throw new Error('Failed to get CSRF token');
     return token;
   }
 }
 
-// Cek Cookie
+// Check Cookie Validity
 async function checkCookie() {
   if (!currentCookie) return null;
   
@@ -100,31 +116,31 @@ async function checkCookie() {
     const response = await fetchRoblox('https://www.roblox.com/mobileapi/userinfo');
     if (response.ok) {
       const data = await response.json();
-      cookieStatus.innerHTML = `✅ Cookie valid! Login sebagai: ${data.UserName}`;
+      cookieStatus.innerHTML = `<i class="fas fa-check-circle"></i> Cookie valid! Login sebagai: ${data.UserName}`;
       cookieStatus.className = 'cookie-status valid';
       return data;
     }
     throw new Error('Invalid');
   } catch (error) {
-    cookieStatus.innerHTML = '❌ Cookie tidak valid. Pastikan cookie FULL dan belum expired.';
+    cookieStatus.innerHTML = `<i class="fas fa-exclamation-circle"></i> Cookie tidak valid atau expired`;
     cookieStatus.className = 'cookie-status invalid';
     return null;
   }
 }
 
+// Auto check cookie
 let debounceTimeout;
 cookieInput.addEventListener('input', () => {
   clearTimeout(debounceTimeout);
   debounceTimeout = setTimeout(() => {
     currentCookie = cookieInput.value.trim();
     if (currentCookie) checkCookie();
-  }, 1000);
+  }, 800);
 });
 
-// ========== UBAH TANGGAL LAHIR ==========
+// Change Birthdate
 async function changeBirthdate(birthdate) {
   const csrfToken = await getCsrfToken();
-  
   const response = await fetchRoblox('https://users.roblox.com/v1/account/setbirthday', {
     method: 'POST',
     headers: { 'X-CSRF-TOKEN': csrfToken },
@@ -135,15 +151,14 @@ async function changeBirthdate(birthdate) {
     const error = await response.json().catch(() => ({}));
     throw new Error(error.errors?.[0]?.message || `HTTP ${response.status}`);
   }
-  
   return true;
 }
 
-// ========== CEK INFO AKUN ==========
+// ========== INFO AKUN ==========
 fetchInfoBtn.onclick = async () => {
   currentCookie = cookieInput.value.trim();
   if (!currentCookie) {
-    showResult('❌ Masukkan cookie!', true);
+    showResult('❌ Masukkan cookie terlebih dahulu!', true);
     return;
   }
   
@@ -155,25 +170,27 @@ fetchInfoBtn.onclick = async () => {
     const data = await response.json();
     
     showResult(`
-✅ INFO AKUN
+╔══════════════════════════════╗
+║       📊 INFO AKUN           ║
+╠══════════════════════════════╣
+║ 🆔 User ID    : ${data.UserID}
+║ 👤 Username   : ${data.UserName}
+║ 📧 Email      : ${data.Email || '❌ TIDAK ADA'}
+║ 🎂 Tanggal Lahir: ${data.Birthday || 'Tidak diatur'}
+║ 💎 Robux      : ${data.RobuxBalance}
+║ 🏆 Membership : ${data.PremiumCurrencyName || 'Tidak ada'}
+╚══════════════════════════════╝
 
-🆔 User ID: ${data.UserID}
-👤 Username: ${data.UserName}
-📧 Email: ${data.Email || 'TIDAK ADA (sudah terhapus)'}
-🎂 Tanggal Lahir: ${data.Birthday || 'Tidak diatur'}
-💎 Robux: ${data.RobuxBalance}
-🏆 Membership: ${data.PremiumCurrencyName || 'Tidak ada'}
-
-📌 Status: ${data.Email ? 'Email masih terpasang' : 'EMAIL SUDAH TERHAPUS!'}
+📌 Status: ${data.Email ? 'Email masih terpasang' : '✅ EMAIL SUDAH TERHAPUS!'}
     `);
   } catch (error) {
-    showResult('❌ ' + error.message, true);
+    showResult('❌ Gagal ambil info: ' + error.message, true);
   } finally {
     setLoading(false);
   }
 };
 
-// ========== FITUR UTAMA: HAPUS EMAIL ==========
+// ========== HAPUS EMAIL (UBAH USIA KE <13) ==========
 deleteEmailBtn.onclick = async () => {
   currentCookie = cookieInput.value.trim();
   if (!currentCookie) {
@@ -194,23 +211,20 @@ deleteEmailBtn.onclick = async () => {
     const emailDeleted = !userData.Email || userData.Email === '';
     
     showResult(`
-✅✅✅ BERHASIL HAPUS EMAIL! ✅✅✅
-
-📅 Tanggal lahir diubah: ${under13Date}
-🔞 Usia: 12 tahun (DI BAWAH 13 TAHUN)
-
-📧 Status Email: ${emailDeleted ? 'TERHAPUS ✅' : 'Masih ada, coba lagi'}
-
-⚠️ Efek ubah usia:
-• Akun masuk mode RESTRICTED
-• Chat terbatas
-• Filter konten lebih ketat
-• Email sudah tidak terhubung ke akun
-
-🔄 Untuk mengembalikan email: 
-Ubah usia ke 13+ (butuh verifikasi)
+╔════════════════════════════════════╗
+║     ✅ EMAIL BERHASIL DIHAPUS ✅    ║
+╠════════════════════════════════════╣
+║ 📅 Tanggal lahir baru: ${under13Date}
+║ 🔞 Usia: 12 tahun (DI BAWAH 13)
+║ 📧 Status Email: ${emailDeleted ? 'TERHAPUS ✅' : 'Masih ada'}
+╠════════════════════════════════════╣
+║ ⚠️  EFEK UBAH USIA:
+║ • Akun masuk mode RESTRICTED
+║ • Chat terbatas
+║ • Filter konten lebih ketat
+║ • Email sudah tidak terhubung
+╚════════════════════════════════════╝
     `);
-    
   } catch (error) {
     showResult('❌ Gagal hapus email: ' + error.message, true);
   } finally {
@@ -230,13 +244,11 @@ randomAgeBtn.onclick = async () => {
   try {
     const randomDate = getRandomUnder13Date();
     await changeBirthdate(randomDate);
-    
     showResult(`✅ Usia diubah ke random (di bawah 13 tahun)
 
 📅 Tanggal lahir baru: ${randomDate}
 
-📧 Cek info akun untuk melihat apakah email sudah terhapus.`);
-    
+📌 Cek Info Akun untuk melihat apakah email sudah terhapus.`);
   } catch (error) {
     showResult('❌ Gagal: ' + error.message, true);
   } finally {
@@ -261,7 +273,6 @@ changeEmailBtn.onclick = async () => {
   setLoading(true);
   try {
     const csrfToken = await getCsrfToken();
-    
     const response = await fetchRoblox('https://accountinformation.roblox.com/v1/email', {
       method: 'PATCH',
       headers: { 'X-CSRF-TOKEN': csrfToken },
@@ -289,14 +300,13 @@ changeUsernameBtn.onclick = async () => {
     return;
   }
   if (!newUsername || newUsername.length < 3 || newUsername.length > 20) {
-    showResult('❌ Username 3-20 karakter!', true);
+    showResult('❌ Username harus 3-20 karakter!', true);
     return;
   }
   
   setLoading(true);
   try {
     const csrfToken = await getCsrfToken();
-    
     const response = await fetchRoblox('https://accountinformation.roblox.com/v1/username', {
       method: 'POST',
       headers: { 'X-CSRF-TOKEN': csrfToken },
@@ -308,7 +318,7 @@ changeUsernameBtn.onclick = async () => {
       throw new Error(error.errors?.[0]?.message || 'Gagal');
     }
     
-    showResult(`✅ Username berubah menjadi: ${newUsername}`);
+    showResult(`✅ Username berhasil diubah menjadi: ${newUsername}\n\n⚠️ Username lama tidak bisa dipakai selama 7 hari!`);
     newUsernameInput.value = '';
   } catch (error) {
     showResult('❌ ' + error.message, true);
@@ -317,7 +327,7 @@ changeUsernameBtn.onclick = async () => {
   }
 };
 
-// ========== LOGOUT ==========
+// ========== LOGOUT SEMUA SESI ==========
 logoutAllBtn.onclick = async () => {
   currentCookie = cookieInput.value.trim();
   if (!currentCookie) {
@@ -328,13 +338,12 @@ logoutAllBtn.onclick = async () => {
   setLoading(true);
   try {
     const csrfToken = await getCsrfToken();
-    
     await fetchRoblox('https://auth.roblox.com/v1/logout-from-all-other-devices', {
       method: 'POST',
       headers: { 'X-CSRF-TOKEN': csrfToken }
     });
     
-    showResult(`✅ Logout dari semua perangkat lain!`);
+    showResult(`✅ Berhasil logout dari semua perangkat lain!\n\n🔒 Cookie lain sudah tidak valid.`);
   } catch (error) {
     showResult('❌ ' + error.message, true);
   } finally {
@@ -342,4 +351,4 @@ logoutAllBtn.onclick = async () => {
   }
 };
 
-console.log('Roblox Manager - Hapus Email via Ubah Usia');
+console.log('Roblox Manager - GitHub Pages Ready!');
