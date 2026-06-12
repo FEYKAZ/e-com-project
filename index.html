@@ -2,68 +2,100 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Roblox Account Manager - Pakai Proxy CORS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Roblox Manager - Hapus Email via Usia</title>
   <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<div class="container">
-  <div class="header">
-    <div class="logo">🔐 Roblox Manager</div>
-    <h1>Account <span>Manager</span></h1>
-    <p>Dengan CORS Proxy - Bisa di GitHub Pages</p>
-    <div class="warning-banner">
-      ⚠️ Hanya untuk akun sendiri! 
+<div class="app-container">
+  <!-- Header -->
+  <div class="app-header">
+    <div class="logo-icon">🔐</div>
+    <h1>Roblox<span>Manager</span></h1>
+    <p class="subtitle">Hapus email dengan ubah usia akun</p>
+  </div>
+
+  <!-- Warning -->
+  <div class="warning-card">
+    <span>⚠️</span>
+    <div class="warning-text">
+      <strong>Hanya untuk akun sendiri!</strong>
+      <small>Mengubah usia ke bawah 13 tahun akan menghapus email otomatis</small>
     </div>
   </div>
 
   <!-- Cookie Input -->
-  <div class="cookie-section">
-    <label>.ROBLOSECURITY Cookie</label>
-    <div class="cookie-input-group">
-      <input type="password" id="cookieInput" placeholder="Masukkan .ROBLOSECURITY cookie-mu...">
-      <button id="toggleCookieBtn" class="toggle-btn">👁️ Show</button>
+  <div class="card">
+    <div class="card-title">
+      <span class="icon">🍪</span>
+      <span>.ROBLOSECURITY Cookie</span>
+    </div>
+    <div class="cookie-input-wrapper">
+      <input type="password" id="cookieInput" class="cookie-input" placeholder="Tempel cookie (dimulai CAE...)">
+      <button id="toggleCookieBtn" class="btn-icon">👁️</button>
     </div>
     <div id="cookieStatus" class="cookie-status"></div>
-    <small class="cookie-hint">
-      📌 Cookie harus dimulai dengan "_|WARNING" atau "CAEaAhA"
-    </small>
+    <div class="hint-text">📌 Cookie format CAE... atau _|WARNING... (salin FULL)</div>
   </div>
 
-  <!-- Actions -->
-  <div class="actions-section">
-    <button id="fetchInfoBtn" class="action-btn info-btn">🔄 Ambil Info Akun</button>
-    
-    <h3>📧 Ubah Email</h3>
-    <div class="input-group">
-      <input type="email" id="newEmail" placeholder="Email baru">
-      <button id="changeEmailBtn" class="action-btn email-btn">✉️ Ubah</button>
-    </div>
+  <!-- Tombol Cek Info -->
+  <button id="fetchInfoBtn" class="btn btn-primary btn-full">
+    🔍 Cek Info Akun
+  </button>
 
-    <h3>🎂 Ubah Tanggal Lahir</h3>
-    <div class="input-group">
-      <input type="date" id="newBirthdate">
-      <button id="changeBirthdateBtn" class="action-btn birth-btn">📅 Ubah</button>
+  <!-- ========== FITUR UTAMA: HAPUS EMAIL VIA UBAH USIA ========== -->
+  <div class="card special-card">
+    <div class="card-title">
+      <span class="icon">🗑️</span>
+      <span>HAPUS EMAIL</span>
     </div>
-
-    <div class="special-section">
-      <h3>⚡ UBAH USIA &lt; 13 TAHUN</h3>
-      <div class="special-buttons">
-        <button id="setUnder13Btn" class="action-btn special-btn under13-btn">🔞 Usia &lt; 13</button>
-        <button id="setRandomUnder13Btn" class="action-btn special-btn random-btn">🎲 Random</button>
-      </div>
+    <div class="special-desc">
+      Dengan mengubah usia akun menjadi <strong>DI BAWAH 13 TAHUN</strong>, 
+      email akan otomatis terhapus dari akun.
     </div>
-
-    <h3>👤 Ubah Username</h3>
-    <div class="input-group">
-      <input type="text" id="newUsername" placeholder="Username baru">
-      <button id="changeUsernameBtn" class="action-btn username-btn">✏️ Ubah</button>
+    <div class="button-group">
+      <button id="deleteEmailBtn" class="btn btn-danger btn-full">
+        🗑️ HAPUS EMAIL (Ubah Usia &lt; 13)
+      </button>
+      <button id="randomAgeBtn" class="btn btn-purple btn-full">
+        🎲 Random Usia (&lt;13 Tahun)
+      </button>
     </div>
-
-    <button id="logoutAllBtn" class="action-btn logout-btn">🚪 Logout Semua Sesi</button>
+    <div class="hint-text warning-text-small">
+      ⚡ Efek: Akun jadi RESTRICTED MODE (chat terbatas, filter ketat)
+    </div>
   </div>
+
+  <!-- Ubah Email Manual (Alternatif) -->
+  <div class="card">
+    <div class="card-title">
+      <span class="icon">📧</span>
+      <span>Ubah Email Manual</span>
+    </div>
+    <div class="input-group">
+      <input type="email" id="newEmail" class="input-field" placeholder="Email baru">
+      <button id="changeEmailBtn" class="btn btn-small btn-green">Ganti</button>
+    </div>
+  </div>
+
+  <!-- Ubah Username -->
+  <div class="card">
+    <div class="card-title">
+      <span class="icon">✏️</span>
+      <span>Ubah Username</span>
+    </div>
+    <div class="input-group">
+      <input type="text" id="newUsername" class="input-field" placeholder="Username baru (3-20 karakter)">
+      <button id="changeUsernameBtn" class="btn btn-small btn-blue">Ganti</button>
+    </div>
+  </div>
+
+  <!-- Logout -->
+  <button id="logoutAllBtn" class="btn btn-dark btn-full">
+    🚪 Logout Semua Sesi Lain
+  </button>
 
   <!-- Result -->
   <div id="resultArea" class="result-card">
@@ -79,7 +111,9 @@
     <p>Memproses...</p>
   </div>
 
-  <footer>© 2026 Roblox Account Manager • Proxy: corsproxy.io</footer>
+  <footer>
+    © 2026 Roblox Manager • Untuk akun sendiri
+  </footer>
 </div>
 
 <script src="script.js"></script>
