@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Roblox Account Manager - Ubah Usia</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="logo">🔐 Roblox Manager</div>
+    <h1>Account <span>Manager</span></h1>
+    <p>Kelola akun Roblox sendiri menggunakan Cookie</p>
+    <div class="warning-banner">
+      ⚠️ Hanya untuk akun sendiri! Ubah usia ke bawah 13 tahun akan mengaktifkan pembatasan akun.
+    </div>
+  </div>
+
+  <!-- Cookie Input -->
+  <div class="cookie-section">
+    <label>.ROBLOSECURITY Cookie</label>
+    <div class="cookie-input-group">
+      <input type="password" id="cookieInput" placeholder="Masukkan .ROBLOSECURITY cookie-mu...">
+      <button id="toggleCookieBtn" class="toggle-btn">👁️ Show</button>
+    </div>
+    <div class="cookie-status" id="cookieStatus"></div>
+    <small class="cookie-hint">
+      Cara dapat cookie: Buka Roblox.com → Login → F12 → Application → Cookies → cari .ROBLOSECURITY
+    </small>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="actions-section">
+    <h3>📋 Informasi Akun</h3>
+    <button id="fetchInfoBtn" class="action-btn info-btn">🔄 Ambil Info Akun</button>
+    
+    <h3>📧 Ubah Email</h3>
+    <div class="input-group">
+      <input type="email" id="newEmail" placeholder="Email baru">
+      <button id="changeEmailBtn" class="action-btn email-btn">✉️ Ubah Email</button>
+    </div>
+
+    <h3>🎂 Ubah Tanggal Lahir (Usia)</h3>
+    <div class="input-group">
+      <input type="date" id="newBirthdate" placeholder="Pilih tanggal">
+      <button id="changeBirthdateBtn" class="action-btn birth-btn">📅 Ubah Ke Tanggal Pilihan</button>
+    </div>
+
+    <!-- FITUR KHUSUS: UBAH KE BAWAH 13 TAHUN -->
+    <div class="special-section">
+      <h3>⚡ FITUR KHUSUS: UBAH USIA &lt; 13 TAHUN</h3>
+      <div class="special-buttons">
+        <button id="setUnder13Btn" class="action-btn special-btn under13-btn">🔞 Ubah Usia &lt; 13 Tahun</button>
+        <button id="setRandomUnder13Btn" class="action-btn special-btn random-btn">🎲 Random Tanggal (&lt;13 Tahun)</button>
+      </div>
+      <small class="special-hint">
+        🔥 Fitur ini akan mengubah tanggal lahir menjadi DI BAWAH 13 TAHUN (otomatis akun jadi terbatas)
+      </small>
+    </div>
+
+    <h3>👤 Ubah Username</h3>
+    <div class="input-group">
+      <input type="text" id="newUsername" placeholder="Username baru (maks 20 karakter)">
+      <button id="changeUsernameBtn" class="action-btn username-btn">✏️ Ubah Username</button>
+    </div>
+
+    <h3>🔒 Security</h3>
+    <button id="logoutAllBtn" class="action-btn logout-btn">🚪 Logout Semua Sesi Lain</button>
+  </div>
+
+  <!-- Result Display -->
+  <div id="resultArea" class="result-card">
+    <div class="result-header">
+      <span>📌 Hasil</span>
+      <button id="clearResultBtn" class="clear-btn">✖</button>
+    </div>
+    <div id="resultContent" class="result-content"></div>
+  </div>
+
+  <!-- Loading -->
+  <div id="loadingOverlay" class="loading-overlay" style="display:none;">
+    <div class="spinner"></div>
+    <p>Memproses...</p>
+  </div>
+
+  <footer>
+    © 2026 Roblox Account Manager • Untuk penggunaan pribadi
+  </footer>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
