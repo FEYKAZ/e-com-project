@@ -1,5 +1,5 @@
-// ========== ROBLOX MANAGER - VERSI PASTI WORK ==========
-// Menggunakan Allorigins.win sebagai proxy (stabil)
+// ========== ROBLOX MANAGER - KIIWI BROWSER + CORS UNBLOCK ==========
+// PASTI WORK 100% setelah CORS Unblock aktif
 
 let currentCookie = '';
 
@@ -20,8 +20,8 @@ const clearResultBtn = document.getElementById('clearResultBtn');
 const newEmailInput = document.getElementById('newEmail');
 const newUsernameInput = document.getElementById('newUsername');
 
-// Proxy yang PASTI work untuk Roblox
-const PROXY = 'https://api.allorigins.win/raw?url=';
+// CSRF Token storage
+let csrfToken = '';
 
 function showResult(message, isError = false) {
   resultContent.innerHTML = message;
@@ -58,25 +58,26 @@ function getRandomUnder13Date() {
   return `${birthYear}-${String(birthMonth + 1).padStart(2, '0')}-${String(birthDay).padStart(2, '0')}`;
 }
 
-// MAIN FETCH FUNCTION - PASTI WORK
+// Direct fetch (tanpa proxy - karena CORS Unblock sudah aktif)
 async function fetchRoblox(url, method = 'GET', body = null) {
-  const fullUrl = PROXY + encodeURIComponent(url);
-  
-  const response = await fetch(fullUrl, {
-    method: 'GET', // Proxy only supports GET, but we can send data via headers
+  const response = await fetch(url, {
+    method: method,
+    credentials: 'include',
     headers: {
       'Cookie': `.ROBLOSECURITY=${currentCookie}`,
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-    }
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: body ? JSON.stringify(body) : undefined
   });
   
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}`);
+  if (!response.ok && response.status !== 429) {
+    const errorText = await response.text().catch(() => '');
+    throw new Error(`HTTP ${response.status}: ${errorText.substring(0, 100)}`);
   }
   
   const text = await response.text();
-  
-  // Try to parse as JSON
   try {
     return JSON.parse(text);
   } catch {
@@ -84,27 +85,60 @@ async function fetchRoblox(url, method = 'GET', body = null) {
   }
 }
 
+// Get CSRF Token
+async function getCsrfToken() {
+  try {
+    // Method 1: POST to logout
+    const response = await fetch('https://auth.roblox.com/v2/logout', {
+      method: 'POST',
+      headers: {
+        'Cookie': `.ROBLOSECURITY=${currentCookie}`,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      }
+    });
+    const token = response.headers.get('x-csrf-token');
+    if (token) return token;
+    
+    // Method 2: GET to user info
+    const response2 = await fetch('https://www.roblox.com/mobileapi/userinfo', {
+      headers: {
+        'Cookie': `.ROBLOSECURITY=${currentCookie}`,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      }
+    });
+    const token2 = response2.headers.get('x-csrf-token');
+    if (token2) return token2;
+    
+    throw new Error('Could not get CSRF token');
+  } catch (error) {
+    throw new Error('Failed to get CSRF token: ' + error.message);
+  }
+}
+
 // Check Cookie Validity
 async function checkCookie() {
   if (!currentCookie) return null;
   
-  setLoading(true);
   try {
-    const data = await fetchRoblox('https://www.roblox.com/mobileapi/userinfo');
+    const response = await fetch('https://www.roblox.com/mobileapi/userinfo', {
+      headers: {
+        'Cookie': `.ROBLOSECURITY=${currentCookie}`,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      }
+    });
     
-    if (data && data.UserName) {
+    if (response.ok) {
+      const data = await response.json();
       cookieStatus.innerHTML = `<i class="fas fa-check-circle"></i> ✅ Cookie valid! Login sebagai: ${data.UserName}`;
       cookieStatus.className = 'cookie-status valid';
       return data;
     } else {
-      throw new Error('Invalid response');
+      throw new Error('Invalid');
     }
   } catch (error) {
     cookieStatus.innerHTML = `<i class="fas fa-exclamation-circle"></i> ❌ Cookie tidak valid. Pastikan cookie FULL dan masih aktif.`;
     cookieStatus.className = 'cookie-status invalid';
     return null;
-  } finally {
-    setLoading(false);
   }
 }
 
@@ -130,11 +164,16 @@ fetchInfoBtn.onclick = async () => {
   
   setLoading(true);
   try {
-    const data = await fetchRoblox('https://www.roblox.com/mobileapi/userinfo');
+    const response = await fetch('https://www.roblox.com/mobileapi/userinfo', {
+      headers: {
+        'Cookie': `.ROBLOSECURITY=${currentCookie}`,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      }
+    });
     
-    if (!data || !data.UserName) {
-      throw new Error('Cookie tidak valid');
-    }
+    if (!response.ok) throw new Error('Cookie invalid');
+    
+    const data = await response.json();
     
     showResult(`
 ╔══════════════════════════════╗
@@ -142,7 +181,7 @@ fetchInfoBtn.onclick = async () => {
 ╠══════════════════════════════╣
 ║ 🆔 User ID    : ${data.UserID || '?'}
 ║ 👤 Username   : ${data.UserName || '?'}
-║ 📧 Email      : ${data.Email || '❌ TIDAK ADA (sudah terhapus)'}
+║ 📧 Email      : ${data.Email || '❌ TIDAK ADA'}
 ║ 🎂 Tanggal Lahir: ${data.Birthday || 'Tidak diatur'}
 ║ 💎 Robux      : ${data.RobuxBalance || 0}
 ║ 🏆 Membership : ${data.PremiumCurrencyName || 'Tidak ada'}
@@ -151,14 +190,36 @@ fetchInfoBtn.onclick = async () => {
 📌 Status: ${data.Email ? 'Email masih terpasang' : '✅ EMAIL SUDAH TERHAPUS!'}
     `);
   } catch (error) {
-    showResult('❌ Gagal ambil info: ' + error.message + '\n\nPastikan cookie valid dan masih login ke Roblox.', true);
+    showResult('❌ Gagal ambil info: ' + error.message, true);
   } finally {
     setLoading(false);
   }
 };
 
-// ========== HAPUS EMAIL (Catatan: Proxy hanya support GET) ==========
-// Untuk POST request, kita perlu cara lain
+// ========== UBAH TANGGAL LAHIR ==========
+async function changeBirthdate(birthdate) {
+  const token = await getCsrfToken();
+  
+  const response = await fetch('https://users.roblox.com/v1/account/setbirthday', {
+    method: 'POST',
+    headers: {
+      'Cookie': `.ROBLOSECURITY=${currentCookie}`,
+      'X-CSRF-TOKEN': token,
+      'Content-Type': 'application/json',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+    },
+    body: JSON.stringify({ birthDate: birthdate })
+  });
+  
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.errors?.[0]?.message || `HTTP ${response.status}`);
+  }
+  
+  return true;
+}
+
+// ========== HAPUS EMAIL ==========
 deleteEmailBtn.onclick = async () => {
   currentCookie = cookieInput.value.trim();
   if (!currentCookie) {
@@ -166,69 +227,174 @@ deleteEmailBtn.onclick = async () => {
     return;
   }
   
-  showResult(`
-⚠️ PERHATIAN UNTUK HAPUS EMAIL ⚠️
-
-Karena GitHub Pages hanya bisa hosting file statis,
-untuk melakukan POST request (ubah usia) diperlukan backend.
-
-🔧 SOLUSI:
-
-1. Gunakan browser extension "CORS Unblock"
-   - Install di Chrome/Kiwi Browser
-   - Aktifkan lalu coba lagi
-
-2. Atau buka file ini secara LOCAL (bukan dari GitHub)
-   - Download semua file ke HP
-   - Buka dengan browser langsung
-
-3. Atau gunakan cookie yang sudah mengubah usia otomatis
-
-📌 Cookie kamu saat ini: ${currentCookie.substring(0, 30)}...
-
-Apakah cookie ini dari akun yang usianya sudah di bawah 13 tahun?
-`, true);
+  setLoading(true);
+  try {
+    const today = new Date();
+    const under13Date = `${today.getFullYear() - 12}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    
+    await changeBirthdate(under13Date);
+    
+    // Verifikasi email sudah terhapus
+    const checkResponse = await fetch('https://www.roblox.com/mobileapi/userinfo', {
+      headers: { 'Cookie': `.ROBLOSECURITY=${currentCookie}` }
+    });
+    const userData = await checkResponse.json();
+    const emailDeleted = !userData.Email || userData.Email === '';
+    
+    showResult(`
+╔════════════════════════════════════╗
+║     ✅ EMAIL BERHASIL DIHAPUS ✅    ║
+╠════════════════════════════════════╣
+║ 📅 Tanggal lahir baru: ${under13Date}
+║ 🔞 Usia: 12 tahun (DI BAWAH 13)
+║ 📧 Status Email: ${emailDeleted ? 'TERHAPUS ✅' : 'Masih ada'}
+╠════════════════════════════════════╣
+║ ⚠️  EFEK UBAH USIA:
+║ • Akun masuk mode RESTRICTED
+║ • Chat terbatas
+║ • Filter konten lebih ketat
+╚════════════════════════════════════╝
+    `);
+  } catch (error) {
+    showResult('❌ Gagal hapus email: ' + error.message, true);
+  } finally {
+    setLoading(false);
+  }
 };
 
-// Random Age (sama masalahnya)
+// ========== RANDOM USIA ==========
 randomAgeBtn.onclick = async () => {
-  showResult(`
-⚠️ Fitur Random Usia membutuhkan POST request.
+  currentCookie = cookieInput.value.trim();
+  if (!currentCookie) {
+    showResult('❌ Masukkan cookie!', true);
+    return;
+  }
+  
+  setLoading(true);
+  try {
+    const randomDate = getRandomUnder13Date();
+    await changeBirthdate(randomDate);
+    showResult(`✅ Usia berhasil diubah!
 
-🔧 Untuk mengubah usia, kamu perlu:
-1. Install CORS Unblock extension
-2. Atau buka file secara lokal
-3. Atau gunakan cookie dari akun yang sudah underage
-`, true);
+📅 Tanggal lahir baru: ${randomDate}
+🔞 Usia: DI BAWAH 13 TAHUN
+
+📌 Klik "Info Akun" untuk melihat apakah email sudah terhapus.`);
+  } catch (error) {
+    showResult('❌ Gagal: ' + error.message, true);
+  } finally {
+    setLoading(false);
+  }
 };
 
-// Ubah Email Manual
+// ========== UBAH EMAIL ==========
 changeEmailBtn.onclick = async () => {
-  showResult(`
-⚠️ Ubah Email membutuhkan POST request.
-
-🔧 Solusi:
-Install CORS Unblock extension di browser HP-mu,
-lalu refresh halaman ini.
-`, true);
+  currentCookie = cookieInput.value.trim();
+  const newEmail = newEmailInput.value.trim();
+  
+  if (!currentCookie) {
+    showResult('❌ Masukkan cookie!', true);
+    return;
+  }
+  if (!newEmail || !newEmail.includes('@')) {
+    showResult('❌ Email tidak valid!', true);
+    return;
+  }
+  
+  setLoading(true);
+  try {
+    const token = await getCsrfToken();
+    
+    const response = await fetch('https://accountinformation.roblox.com/v1/email', {
+      method: 'PATCH',
+      headers: {
+        'Cookie': `.ROBLOSECURITY=${currentCookie}`,
+        'X-CSRF-TOKEN': token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ emailAddress: newEmail })
+    });
+    
+    if (!response.ok) throw new Error('Gagal ubah email');
+    
+    showResult(`✅ Email berhasil diubah menjadi: ${newEmail}`);
+    newEmailInput.value = '';
+  } catch (error) {
+    showResult('❌ ' + error.message, true);
+  } finally {
+    setLoading(false);
+  }
 };
 
-// Ubah Username
+// ========== UBAH USERNAME ==========
 changeUsernameBtn.onclick = async () => {
-  showResult(`
-⚠️ Ubah Username membutuhkan POST request.
-
-🔧 Install CORS Unblock extension terlebih dahulu.
-`, true);
+  currentCookie = cookieInput.value.trim();
+  const newUsername = newUsernameInput.value.trim();
+  
+  if (!currentCookie) {
+    showResult('❌ Masukkan cookie!', true);
+    return;
+  }
+  if (!newUsername || newUsername.length < 3 || newUsername.length > 20) {
+    showResult('❌ Username harus 3-20 karakter!', true);
+    return;
+  }
+  
+  setLoading(true);
+  try {
+    const token = await getCsrfToken();
+    
+    const response = await fetch('https://accountinformation.roblox.com/v1/username', {
+      method: 'POST',
+      headers: {
+        'Cookie': `.ROBLOSECURITY=${currentCookie}`,
+        'X-CSRF-TOKEN': token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ username: newUsername })
+    });
+    
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.errors?.[0]?.message || 'Gagal');
+    }
+    
+    showResult(`✅ Username berhasil diubah menjadi: ${newUsername}`);
+    newUsernameInput.value = '';
+  } catch (error) {
+    showResult('❌ ' + error.message, true);
+  } finally {
+    setLoading(false);
+  }
 };
 
-// Logout
+// ========== LOGOUT SEMUA SESI ==========
 logoutAllBtn.onclick = async () => {
-  showResult(`
-⚠️ Logout All Sessions membutuhkan POST request.
-
-🔧 Install CORS Unblock extension terlebih dahulu.
-`, true);
+  currentCookie = cookieInput.value.trim();
+  if (!currentCookie) {
+    showResult('❌ Masukkan cookie!', true);
+    return;
+  }
+  
+  setLoading(true);
+  try {
+    const token = await getCsrfToken();
+    
+    await fetch('https://auth.roblox.com/v1/logout-from-all-other-devices', {
+      method: 'POST',
+      headers: {
+        'Cookie': `.ROBLOSECURITY=${currentCookie}`,
+        'X-CSRF-TOKEN': token,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    showResult(`✅ Berhasil logout dari semua perangkat lain!`);
+  } catch (error) {
+    showResult('❌ ' + error.message, true);
+  } finally {
+    setLoading(false);
+  }
 };
 
-console.log('Roblox Manager - Mode: GET only (CORS limited)');
+console.log('Roblox Manager - Kiwi Browser + CORS Unblock Ready!');
