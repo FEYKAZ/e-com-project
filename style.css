@@ -20,7 +20,6 @@ body {
   border-radius: 28px;
   padding: 24px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
 .header {
@@ -188,6 +187,7 @@ body {
   background: #3b82f6;
   color: white;
   width: 100%;
+  margin-bottom: 10px;
 }
 
 .email-btn {
@@ -209,6 +209,7 @@ body {
   background: #ef4444;
   color: white;
   width: 100%;
+  margin-top: 10px;
 }
 
 .special-section {
@@ -243,14 +244,6 @@ body {
 .random-btn {
   background: linear-gradient(135deg, #8b5cf6, #7c3aed);
   color: white;
-}
-
-.special-hint {
-  display: block;
-  font-size: 0.7rem;
-  color: #c084fc;
-  margin-top: 10px;
-  line-height: 1.5;
 }
 
 .result-card {
